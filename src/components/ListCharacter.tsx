@@ -2,11 +2,18 @@ import { useEffect, useState } from "react";
 import { Character } from "../types/character";
 import { getCharacters } from "../utils/get-characters";
 import { Spinner } from "./Spinner";
+import CharacterDetail from "./CharacterDetail";
 
 const ListCharacter = () => {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [detailModal, setDetailModal] = useState<boolean>(false)
+  const [selectedCharacter, setSelectedCharacter] = useState<Character>()
+  
+  function handleClose () {
+    setDetailModal(false)
+  }
 
   useEffect(() => {
     const fetchCharacters = async () => {
@@ -23,6 +30,11 @@ const ListCharacter = () => {
     fetchCharacters();
   }, []);
 
+  const handleClick = async (c: Character) => {
+    setDetailModal(true)
+    setSelectedCharacter(c)
+  }
+
   return (
     <>
       {loading ? (
@@ -36,6 +48,7 @@ const ListCharacter = () => {
           <div
             key={c.id}
             className="max-w-sm rounded overflow-hidden shadow-lg hover:bg-slate-200"
+            onClick={() => handleClick(c)}
           >
             <img className="w-full" src={c.image} alt={c.name} />
             <div className="px-6 py-2">
@@ -47,6 +60,7 @@ const ListCharacter = () => {
           </div>
         ))
       )}
+      {detailModal && selectedCharacter && <CharacterDetail character={selectedCharacter} onClose={handleClose}/>}
     </>
   );
 };
